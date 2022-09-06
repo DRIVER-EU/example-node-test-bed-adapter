@@ -1,12 +1,78 @@
 ---
-version: "3"
+version: '2'
 services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.2.1
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - '3500:2181'
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  broker:
+    image: confluentinc/cp-kafka:7.2.1
+    hostname: broker
+    container_name: broker
+    depends_on:
+      - zookeeper
+    ports:
+      - '29092:29092'
+      - '3501:9092'
+      - '9101:9101'
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_REPLICA_FETCH_MAX_BYTES: 10485760
+      KAFKA_MESSAGE_MAX_BYTES: 10485760
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_JMX_OPTS: -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=broker -Dcom.sun.management.jmxremote.rmi.port=9101
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:7.2.1
+    hostname: schema-registry
+    container_name: schema-registry
+    depends_on:
+      - broker
+    ports:
+      - '3502:8081'
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker:29092'
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 3600:8080
+    depends_on:
+      - zookeeper
+      - broker
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: broker:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      KAFKA_CLUSTERS_0_JMXPORT: 9101
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry:8081
+      # KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: first
+      # KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://kafka-connect0:8083
+
   silent-producer:
     image: silent-producer
-    # depends_on:
-    #   - broker
-    #   - schema_registry
+    depends_on:
+      - broker
+      - schema-registry
     environment:
       KAFKA_HOST: broker:9092
       SCHEMA_REGISTRY: http://schema_registry:3502
-      PRODUCE_TOPICS: simulation_request_move,simulation_request_startinject,simulation_entity_item,standard_cap,simulation_time_control,simulation_time_mgmt,system_topic_access_invite
+      DEFAULT_PARTITIONS: 1
+      PARTITION_SPECIFICATION: system_heartbeat:1:360000

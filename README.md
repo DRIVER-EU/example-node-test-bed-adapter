@@ -39,6 +39,16 @@ node dist/consumer.js
 npm run docker:build:silentproducer
 ```
 
+| ENVIRONMENT VARIABLE    | Default value    | Example                                                    |
+| ----------------------- | ---------------- | ---------------------------------------------------------- |
+| CLIENT_ID               | tno-bootstrapper |                                                            |
+| KAFKA_HOST              | localhost:3501   |                                                            |
+| SCHEMA_REGISTRY         | localhost:3502   |                                                            |
+| SCHEMA_FOLDER           | $PWD/src/schemas |                                                            |
+| DEFAULT_PARTITIONS      | 1                |                                                            |
+| PARTITION_SPECIFICATION | ''               | system_heartbeat:1:360000,topic:partitions:retention_in_ms |
+
+
 This will create a docker local image with the name 'silent-producer'. See the `docker-compose.yml` for an example service configuration to add in your test-bed composition.
 
 To publish the local docker image to drivereu dockerhub:
@@ -65,9 +75,3 @@ npm run silent-producer # To create some topics. Use CTRL-C to stop it.
 ```bash
 npm start
 ```
-
-
-
-## WARNING
-
-The .NET kafka adapter publish the kafka schema's (found no way to disable this)! When the schema matches the already published schema nothing happens, but when there are changes the schema version is update in the registry (even if the changes are in the documentation)!

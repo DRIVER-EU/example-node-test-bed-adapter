@@ -20,7 +20,7 @@ const silentProducer = () => {
     const adapter = new TestBedAdapter({
       kafkaHost: process.env.KAFKA_HOST || 'localhost:3501',
       schemaRegistry: process.env.SCHEMA_REGISTRY || 'localhost:3502',
-      clientId: id,
+      clientId: process.env.CLIENT_ID || id,
       fetchAllSchemas: false,
       fetchAllVersions: false,
       autoRegisterSchemas: true,
@@ -39,34 +39,37 @@ const silentProducer = () => {
       const partitionSpecification =
         process.env.PARTITION_SPECIFICATION?.split(',') || [];
 
-      // Create a record of <topic, partitions>
-      let topicWithPartition = {} as Record<string, number>;
-      partitionSpecification.forEach((item: string) => {
-        const topic_with_partition = item.split(':');
-        topicWithPartition[topic_with_partition[0] as string] = Number(
-          topic_with_partition[1]
-        ) as number;
-      });
+      const days7 = 7 * 24 * 3600000;
+      const topicWithPartition = partitionSpecification.reduce((acc, item) => {
+        const [topic, partitions = 1, retention = days7] = item.split(':');
+        acc[topic] = [
+          isNaN(+partitions) ? 1 : +partitions,
+          isNaN(+retention) ? days7 : +retention,
+        ];
+        return acc;
+      }, {} as Record<string, [partition: number, retention: number]>);
 
-      let schemas = adapter.uploadedSchemas;
-      const schemasToSend = schemas.map((topic: string) => {
-        // If the topic is in the specified list, use that no. of partitions
-        if (topic in topicWithPartition) {
-          return {
-            topic: topic,
-            partitions: topicWithPartition[topic]
-              ? topicWithPartition[topic]
-              : process.env.DEFAULT_PARTITIONS || 1,
-            replicationFactor: 1,
-          };
-        }
-        // else use the default partition field
-        return {
-          topic: topic,
-          partitions: process.env.DEFAULT_PARTITIONS || 1,
-          replicationFactor: 1,
-        };
-      }) as Array<CreateTopicRequest>;
+      const replicationFactor = 1;
+      const partitions = process.env.DEFAULT_PARTITIONS || 1;
+      const schemasToSend = adapter.uploadedSchemas.map((topic: string) =>
+        topic in topicWithPartition
+          ? {
+              topic,
+              partitions: topicWithPartition[topic][0],
+              replicationFactor,
+              configEntries: [
+                {
+                  name: 'retention.ms',
+                  value: `${topicWithPartition[topic][1]}`,
+                },
+              ],
+            }
+          : {
+              topic,
+              partitions,
+              replicationFactor,
+            }
+      ) as Array<CreateTopicRequest>;
       try {
         const createdTopics = await adapter.createTopics(schemasToSend);
         if (createdTopics.length === 0) {
