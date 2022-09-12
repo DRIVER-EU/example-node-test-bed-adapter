@@ -85,7 +85,7 @@ const silentProducer = () => {
         info(
           `Created the following topics:\n${createdTopics
             .sort()
-            .map((t) => `- ${typeof t === 'string' ? t : JSON.stringify(t)}`)
+            .map((t) => `- ${typeof t === 'string' ? t : t.topic}`)
             .join('\n')}\n`
         );
       } catch (err: any) {
