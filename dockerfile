@@ -22,5 +22,5 @@ COPY ./package.json ./package.json
 COPY --from=builder /code/dist .
 COPY package.json ./package.json
 # COPY --from=builder /code/node_modules /app/node_modules
-RUN npm i --only=prod
+RUN npm i --omit=dev
 CMD ["node", "silent-producer.js"]
