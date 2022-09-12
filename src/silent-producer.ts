@@ -5,7 +5,13 @@ import {
   TestBedAdapter,
 } from 'node-test-bed-adapter';
 
+const utcStr = () => `${new Date().toUTCString()}:`;
+
 const log = Logger.instance;
+log.debug = (msg: string) => log.debug(`${utcStr()} ${msg}`);
+log.info = (msg: string) => log.info(`${utcStr()} ${msg}`);
+log.warn = (msg: string) => log.warn(`${utcStr()} ${msg}`);
+log.error = (msg: string) => log.error(`${utcStr()} ${msg}`);
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -80,7 +86,7 @@ const silentProducer = () => {
         log.info(
           `Created the following topics:\n${createdTopics
             .sort()
-            .map((t) => `- ${t}`)
+            .map((t) => `- ${typeof t === 'string' ? t : JSON.stringify(t)}`)
             .join('\n')}\n`
         );
       } catch (error) {
