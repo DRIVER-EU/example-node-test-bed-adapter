@@ -8,10 +8,9 @@ import {
 const utcStr = () => `${new Date().toUTCString()}:`;
 
 const log = Logger.instance;
-log.debug = (msg: string) => log.debug(`${utcStr()} ${msg}`);
-log.info = (msg: string) => log.info(`${utcStr()} ${msg}`);
-log.warn = (msg: string) => log.warn(`${utcStr()} ${msg}`);
-log.error = (msg: string) => log.error(`${utcStr()} ${msg}`);
+const info = (msg: string) => log.info(`${utcStr()} ${msg}`);
+const warn = (msg: string) => log.warn(`${utcStr()} ${msg}`);
+const error = (msg: string) => log.error(`${utcStr()} ${msg}`);
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -80,19 +79,19 @@ const silentProducer = () => {
         const createdTopics = await adapter.createTopics(schemasToSend);
         if (createdTopics.length === 0) {
           // Crash if the topics were not correctly created. This will trigger a restart which should resolve the issue.
-          console.log('0 topics created, restarting');
+          warn('0 topics created, restarting');
           process.exit(1);
         }
-        log.info(
+        info(
           `Created the following topics:\n${createdTopics
             .sort()
             .map((t) => `- ${typeof t === 'string' ? t : JSON.stringify(t)}`)
             .join('\n')}\n`
         );
-      } catch (error) {
-        console.log(error);
+      } catch (err: any) {
+        error(err);
       }
-      log.info(`Exiting ${id}.`);
+      info(`Exiting ${id}.`);
       process.exit(0);
     });
     adapter.connect();
