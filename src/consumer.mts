@@ -1,19 +1,16 @@
 // UNCOMMENT IF YOU WANT TO ENHANCE THE LOG OUTPUT OF KAFKA
 // import { consoleLoggerProvider } from './console-logger-provider';
-// const kafkaLogging = require('kafka-node/logging');
+// const kafkaLogging = require('kafkajs/logging');
 // kafkaLogging.setLoggerProvider(consoleLoggerProvider);
 
 import {
   TestBedAdapter,
-  Logger,
+  AdapterLogger,
   LogLevel,
-  ITopicMetadataItem,
-  IAdapterMessage,
-  TimeControlTopic,
-  OffsetOutOfRange,
+  AdapterMessage,
 } from 'node-test-bed-adapter';
 
-const log = Logger.instance;
+const log = AdapterLogger.instance;
 
 class Consumer {
   private id = 'tno-consumer';
@@ -21,19 +18,16 @@ class Consumer {
 
   constructor() {
     this.adapter = new TestBedAdapter({
-      // kafkaHost: process.env.KAFKA_HOST || 'localhost:3501',
-      // schemaRegistry: process.env.SCHEMA_REGISTRY || 'localhost:3502',
-      kafkaHost: process.env.KAFKA_HOST || 'strategy.satways.net:3501',
-      schemaRegistry:
-        process.env.SCHEMA_REGISTRY || 'strategy.satways.net:3502',
+      kafkaHost: process.env.KAFKA_HOST || 'localhost:9092',
+      schemaRegistry: process.env.SCHEMA_REGISTRY || 'localhost:3502',
       fetchAllSchemas: false,
       fetchAllVersions: false,
       wrapUnions: true,
       // wrapUnions: 'auto',
-      clientId: this.id,
+      groupId: this.id,
       // consume: [{ topic: TimeControlTopic }],
-      consume: [{ topic: 'standard_cap', offset: 0 }],
-      fromOffset: false,
+      consume: ['standard_cap'],
+      fromOffset: 'earliest',
       logging: {
         logToConsole: LogLevel.Info,
         logToFile: LogLevel.Info,
@@ -44,7 +38,7 @@ class Consumer {
     this.adapter.on('ready', () => {
       this.subscribe();
       log.info('Consumer is connected');
-      // this.getTopics();
+      this.getTopics();
       // this.adapter.addConsumerTopics({ topic: 'system_configuration', offset: 0 }, true, (err, msg) => {
       //   if (err) {
       //     return log.error(err);
@@ -67,59 +61,46 @@ class Consumer {
     });
   }
 
-  private getTopics() {
-    this.adapter.loadMetadataForTopics([], (error, results) => {
+  private async getTopics() {
+    await this.adapter.loadMetadataForTopics([], (error, results) => {
       if (error) {
         return log.error(error);
       }
       if (results && results.length > 0) {
         results.forEach((result) => {
-          if (result.hasOwnProperty('metadata')) {
-            console.log('TOPICS');
-            const metadata = (
-              result as {
-                [metadata: string]: { [topic: string]: ITopicMetadataItem };
-              }
-            ).metadata;
-            for (let key in metadata) {
-              const md = metadata[key];
-              console.log(
-                `Topic: ${key}, partitions: ${Object.keys(md).length}`
-              );
-            }
-          } else {
-            console.log('NODE');
-            console.log(result);
-          }
+          console.log(JSON.stringify(result));
         });
       }
     });
   }
 
-  private handleMessage(message: IAdapterMessage) {
+  private handleMessage(message: AdapterMessage) {
     const stringify = (m: string | Object) =>
       typeof m === 'string' ? m : JSON.stringify(m, null, 2);
     switch (message.topic.toLowerCase()) {
       case 'system_heartbeat':
-        log.info(
-          `Received heartbeat message with key ${stringify(
-            message.key
-          )}: ${stringify(message.value)}`
-        );
+        message.key &&
+          log.info(
+            `Received heartbeat message with key ${stringify(
+              message.key
+            )}: ${stringify(message.value)}`
+          );
         break;
       case 'standard_cap':
-        log.info(
-          `Received CAP message with key ${stringify(message.key)}: ${stringify(
-            message.value
-          )}`
-        );
+        message.key &&
+          log.info(
+            `Received CAP message with key ${stringify(
+              message.key
+            )}: ${stringify(message.value)}`
+          );
         break;
       default:
-        log.info(
-          `Received ${message.topic} message with key ${stringify(
-            message.key
-          )}: ${stringify(message.value)}`
-        );
+        message.key &&
+          log.info(
+            `Received ${message.topic} message with key ${stringify(
+              message.key
+            )}: ${stringify(message.value)}`
+          );
         break;
     }
   }
