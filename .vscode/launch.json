@@ -42,6 +42,7 @@
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/src/silent-producer.mts",
       "outFiles": ["${workspaceFolder}/**/*"],
+      "console": "integratedTerminal",
       "env": {
         "KAFKA_HOST": "localhost:9092",
         "SCHEMA_REGISTRY": "localhost:3502",
