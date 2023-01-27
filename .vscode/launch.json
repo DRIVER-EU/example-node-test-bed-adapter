@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "pwa-node",
+      "type": "node",
       "request": "launch",
       "name": "Run producer",
       "skipFiles": ["<node_internals>/**"],
@@ -14,12 +14,26 @@
       "runtimeArgs": ["--experimental-json-modules"]
     },
     {
-      "type": "pwa-node",
+      "type": "node",
       "request": "launch",
       "name": "Run consumer",
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/src/consumer.ts",
       "outFiles": ["${workspaceFolder}/dist/**/*.js"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Run bootstrapper",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/src/silent-producer.ts",
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "env": {
+        "KAFKA_HOST": "localhost:9092",
+        "SCHEMA_REGISTRY": "localhost:3502",
+        "SCHEMA_FOLDER": "/home/erik/dev/osint/infrastructure/schemas",
+        "PARTITION_SPECIFICATION": "system_heartbeat:1:360000,article_url_generic:2"
+      }
     }
   ]
 }

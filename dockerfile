@@ -22,4 +22,4 @@ COPY ./package.json ./package.json
 COPY --from=builder /code/dist .
 COPY package.json ./package.json
 RUN npm i --omit=dev
-CMD ["node", "silent-producer.js"]
+CMD ["node", "silent-producer.mjs"]
