@@ -9,30 +9,44 @@
       "request": "launch",
       "name": "Run producer",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/src/producer.ts",
-      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
-      "runtimeArgs": ["--experimental-json-modules"]
+      "program": "${workspaceFolder}/src/producer.mts",
+      "outFiles": ["${workspaceFolder}/dist/**/*.mjs"],
+      "console": "integratedTerminal",
+      "runtimeArgs": ["--experimental-json-modules"],
+      "env": {
+        "KAFKA_HOST": "localhost:9092",
+        "SCHEMA_REGISTRY": "localhost:3502",
+        "SCHEMA_FOLDER": "/home/erik/dev/osint/infrastructure/schemas",
+        "PARTITION_SPECIFICATION": "system_heartbeat:1:360000,article_url_generic:2"
+      }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Run consumer",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/src/consumer.ts",
-      "outFiles": ["${workspaceFolder}/dist/**/*.js"]
+      "program": "${workspaceFolder}/src/consumer.mts",
+      "outFiles": ["${workspaceFolder}/dist/**/*.mjs"],
+      "console": "integratedTerminal",
+      "env": {
+        "KAFKA_HOST": "localhost:9092",
+        "SCHEMA_REGISTRY": "localhost:3502",
+        "SCHEMA_FOLDER": "/home/erik/dev/osint/infrastructure/schemas",
+        "PARTITION_SPECIFICATION": "system_heartbeat:1:360000,article_url_generic:2"
+      }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Run bootstrapper",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/src/silent-producer.ts",
-      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "program": "${workspaceFolder}/src/silent-producer.mts",
+      "outFiles": ["${workspaceFolder}/**/*"],
       "env": {
         "KAFKA_HOST": "localhost:9092",
         "SCHEMA_REGISTRY": "localhost:3502",
         "SCHEMA_FOLDER": "/home/erik/dev/osint/infrastructure/schemas",
-        "PARTITION_SPECIFICATION": "system_heartbeat:1:360000,article_url_generic:2"
+        "PARTITION_SPECIFICATION": "system_heartbeat:1:600000, simulation_time_mgmt:1:60000000, system_logging"
       }
     }
   ]
