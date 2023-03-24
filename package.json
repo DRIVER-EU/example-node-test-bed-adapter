@@ -14,9 +14,9 @@
     "consumer": "node dist/consumer.js",
     "update_kafka_schemas": "update_kafka_schemas.bat",
     "docker:build": "docker build -t silent-producer .",
-    "docker:tag": "docker tag silent-producer drivereu/silent-producer:2.0.9",
+    "docker:tag": "docker tag silent-producer drivereu/silent-producer:3.0.5",
     "docker:tag:latest": "docker tag silent-producer drivereu/silent-producer:latest",
-    "docker:publish": "docker push drivereu/silent-producer:2.0.9",
+    "docker:publish": "docker push drivereu/silent-producer:3.0.5",
     "docker:publish:latest": "docker push drivereu/silent-producer:latest"
   },
   "repository": {
