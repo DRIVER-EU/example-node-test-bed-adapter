@@ -40,13 +40,13 @@
       "request": "launch",
       "name": "Run bootstrapper",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/src/silent-producer.mts",
+      "program": "${workspaceFolder}/src/silent-producer.ts",
       "outFiles": ["${workspaceFolder}/**/*"],
       "console": "integratedTerminal",
       "env": {
-        "KAFKA_HOST": "localhost:9092",
-        "SCHEMA_REGISTRY": "localhost:3502",
-        "SCHEMA_FOLDER": "/home/erik/dev/osint/infrastructure/schemas",
+        "KAFKA_HOST": "localhost:19092",
+        "SCHEMA_REGISTRY": "localhost:18081",
+        "SCHEMA_FOLDER": "../infrastructure/schemas",
         "PARTITION_SPECIFICATION": "system_heartbeat:1:600000, simulation_time_mgmt:1:60000000, system_logging"
       }
     }
