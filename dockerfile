@@ -11,7 +11,7 @@ COPY package.json /code/package.json
 WORKDIR /code
 RUN npm i
 COPY ./tsconfig.json .
-COPY ./src/silent-producer.mts ./src/silent-producer.ts
+COPY ./src/silent-producer.ts ./src/silent-producer.ts
 RUN npm run build
 
 FROM node:18-alpine
