@@ -1,6 +1,6 @@
 {
   "name": "example-node-test-bed-adapter",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "description": "An example project of how to use the node-test-bed-adapter",
   "main": "dist/producer.js",
   "typings": "dist/producer.d.ts",
@@ -14,9 +14,9 @@
     "consumer": "node dist/consumer.js",
     "update_kafka_schemas": "update_kafka_schemas.bat",
     "docker:build": "docker build -t silent-producer .",
-    "docker:tag": "docker tag silent-producer drivereu/silent-producer:3.0.7",
+    "docker:tag": "docker tag silent-producer drivereu/silent-producer:3.0.9",
     "docker:tag:latest": "docker tag silent-producer drivereu/silent-producer:latest",
-    "docker:publish": "docker push drivereu/silent-producer:3.0.5",
+    "docker:publish": "docker push drivereu/silent-producer:3.0.9",
     "docker:publish:latest": "docker push drivereu/silent-producer:latest"
   },
   "repository": {
@@ -38,11 +38,11 @@
   },
   "homepage": "https://github.com/DRIVER-EU/example-node-test-bed-adapter#readme",
   "dependencies": {
-    "node-test-bed-adapter": "^3.0.7"
+    "node-test-bed-adapter": "^3.0.9"
   },
   "devDependencies": {
     "@types/geojson": "^7946.0.10",
-    "@types/node": "^18.15.7",
+    "@types/node": "^18.15.10",
     "typescript": "5.0.2"
   }
 }
