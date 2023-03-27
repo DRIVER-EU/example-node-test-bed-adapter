@@ -14,7 +14,7 @@
     "consumer": "node dist/consumer.js",
     "update_kafka_schemas": "update_kafka_schemas.bat",
     "docker:build": "docker build -t silent-producer .",
-    "docker:tag": "docker tag silent-producer drivereu/silent-producer:3.0.5",
+    "docker:tag": "docker tag silent-producer drivereu/silent-producer:3.0.7",
     "docker:tag:latest": "docker tag silent-producer drivereu/silent-producer:latest",
     "docker:publish": "docker push drivereu/silent-producer:3.0.5",
     "docker:publish:latest": "docker push drivereu/silent-producer:latest"
@@ -38,11 +38,11 @@
   },
   "homepage": "https://github.com/DRIVER-EU/example-node-test-bed-adapter#readme",
   "dependencies": {
-    "node-test-bed-adapter": "^3.0.5"
+    "node-test-bed-adapter": "^3.0.7"
   },
   "devDependencies": {
     "@types/geojson": "^7946.0.10",
-    "@types/node": "^18.15.3",
-    "typescript": "4.9.5"
+    "@types/node": "^18.15.7",
+    "typescript": "5.0.2"
   }
 }
