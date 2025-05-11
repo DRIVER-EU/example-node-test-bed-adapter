@@ -14,7 +14,7 @@ COPY ./tsconfig.json .
 COPY ./src/silent-producer.ts ./src/silent-producer.ts
 RUN npm run build
 
-FROM node:18-alpine
+FROM node:22.15-alpine
 RUN mkdir -p /app
 WORKDIR /app
 COPY ./src/schemas ./src/schemas
